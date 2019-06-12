@@ -1,0 +1,17 @@
+#!/bin/bash
+
+num_nodes=( 1 2 4 8 16 32 48 64 )
+
+desc=$1
+remote=$2
+filename="${1}.txt"
+
+for (( i = 0 ; i < ${#num_nodes[@]} ; i++ ))
+do
+   mpirun -ppn 1 -hosts phi1,phi2 ./mcca ${num_nodes[$i]} $remote
+done
+
+mkdir results/$desc
+mv *_results.txt results/$desc/.
+cat results/$desc/*_results.txt > results/$desc/total.txt
+sort -k 1,1 -k 2,2 -n results/$desc/total.txt > results/$desc/output.txt

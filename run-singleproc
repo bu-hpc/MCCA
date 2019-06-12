@@ -1,0 +1,28 @@
+#!/bin/bash
+#num_nodes=( 2 4 8 16 32 48 64 80 96 112 128 144 160 176 192 208 224 240 256 )
+#num_nodes=( 2 4 8 16 32 48 64 )
+ppn=( 1 )
+threads=( 63 126 189 252 )
+#threads=( 64 128 192 256 )
+
+desc=$1
+thrdr=$2
+procr=$3
+remr=$4
+epc=$5
+
+mkdir results/$desc
+
+for (( i = 0 ; i < ${#threads[@]} ; i++ ))
+do
+sleep 1
+mpirun -ppn ${ppn[0]} -hosts phi1,phi2 ./mcca ${threads[$i]} ${ppn[0]} $thrdr $procr $remr $epc 
+mpirun -ppn ${ppn[0]} -hosts phi1,phi2,phi3,phi4 ./mcca ${threads[$i]} ${ppn[0]} $thrdr $procr $remr $epc 
+mpirun -ppn ${ppn[0]} -hosts phi1,phi2,phi3,phi4,phi5,phi6 ./mcca ${threads[$i]} ${ppn[0]} $thrdr $procr $remr $epc 
+mpirun -ppn ${ppn[0]} -hosts phi1,phi2,phi3,phi4,phi5,phi6,phi7,phi8 ./mcca ${threads[$i]} ${ppn[0]} $thrdr $procr $remr $epc 
+done
+
+mv *_results.txt results/$desc/.
+cat results/$desc/*_results.txt > results/$desc/total.txt
+sort -k 1,1 -k 2,2 -n results/$desc/total.txt > results/$desc/output.txt
+
